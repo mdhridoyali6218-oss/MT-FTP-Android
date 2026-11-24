@@ -1,4 +1,6 @@
 
+          
+
 name: Android APK Build
 
 on:
@@ -22,11 +24,10 @@ jobs:
           java-version: '17'
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install Android SDK
         run: |
-          sdkmanager "platforms;android-35" "build-tools;35.0.0"
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$ANDROID_HOME" --licenses
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$ANDROID_HOME" "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
       - name: Extract Project
         run: |
@@ -37,6 +38,7 @@ jobs:
             exit 1
           fi
           echo "PROJECT_DIR=$PROJECT_DIR" >> $GITHUB_ENV
+          echo "sdk.dir=$ANDROID_HOME" > "$PROJECT_DIR/local.properties"
 
       - name: Install Gradle 8.9
         run: |
@@ -54,4 +56,3 @@ jobs:
           name: MT-FTP-Android-APK
           path: project/**/build/outputs/apk/debug/*.apk
           if-no-files-found: error
-          
