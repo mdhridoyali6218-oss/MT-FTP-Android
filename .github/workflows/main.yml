@@ -1,7 +1,5 @@
 
-          
-
-name: Android APK Build
+name: MT Internet FTP Server APK Build
 
 on:
   workflow_dispatch:
@@ -29,14 +27,17 @@ jobs:
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$ANDROID_HOME" --licenses
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$ANDROID_HOME" "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
-      - name: Extract Project
+      - name: Extract Updated Android Project
         run: |
-          unzip -q MT-FTP-Android-Studio-Project.zip -d project
+          unzip -q MT-Internet-FTP-Server-Updated-Source.zip -d project
+
           PROJECT_DIR=$(find project -name settings.gradle.kts -printf '%h\n' | head -n 1)
+
           if [ -z "$PROJECT_DIR" ]; then
             echo "Android project not found"
             exit 1
           fi
+
           echo "PROJECT_DIR=$PROJECT_DIR" >> $GITHUB_ENV
           echo "sdk.dir=$ANDROID_HOME" > "$PROJECT_DIR/local.properties"
 
@@ -53,6 +54,7 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: MT-FTP-Android-APK
+          name: MT-Internet-FTP-Server-APK
           path: project/**/build/outputs/apk/debug/*.apk
           if-no-files-found: error
+          
